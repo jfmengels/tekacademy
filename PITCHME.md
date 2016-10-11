@@ -77,7 +77,10 @@ Validating cached responses with ETags
 #### How to?
 
 The only thing left to do is to ensure that the server is providing the necessary ETag tokens.
-ExpressJs & express.static eanble Etag by default
+
+ExpressJs & express.static enable Etag by default
+
+[https://up.coorpacademy.com/config](https://up.coorpacademy.com/config)
 
 #HSLIDE
 
