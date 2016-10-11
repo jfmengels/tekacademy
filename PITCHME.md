@@ -1,5 +1,7 @@
 #HTTP Cache
 
+![keep cool](assets/img/comics-geek-joyoftech-551835.gif)
+
 #VSLIDE
 
 Since June 1999
