@@ -118,8 +118,25 @@ RFC: Max 1 year
 
 #VSLIDE
 
+### Cache-Control directives examples
+
+Cache-Control Header | Explanation
+------------ | -------------
+max-age=86400 | Response can be cached by browser and any intermediary caches (that is, it's "public") for up to 1 day (60 seconds x 60 minutes x 24 hours).
+private, max-age=600 | Response can be cached by the client’s browser only for up to 10 minutes (60 seconds x 10 minutes).
+no-store | Response is not allowed to be cached and must be fetched in full on every request.
+
+#VSLIDE
+
 ###### Defining optimal Cache-Control policy
 ![Decision Tree](assets/img/http-cache-decision-tree.png)
+
+
+#VSLIDE
+
+### Client Caching and quick updates
+
+![Quick win](assets/img/http-cache-hierarchy.png)
 
 #HSLIDE
 
