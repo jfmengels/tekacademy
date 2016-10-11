@@ -10,7 +10,7 @@ Since June 1999
 
 50 percent http hits could be cached
 
-![Image of Alexa](https://raw.githubusercontent.com/CoorpAcademy/tekacademy/httpcache/assets/img/cacheable-resources.png)
+![Image of Alexa](assets/img/cacheable-resources.png)
 300 000 first sites(Alexa ranking)
 
 #HSLIDE
@@ -55,11 +55,39 @@ Server: Microsoft-IIS/4.0
 Age: 922
 Proxy-Connection: close
 ```
+
+#HSLIDE
+
+#### Good news?
+
+Every browser ships with an implementation of an HTTP cache
+
+![Simple cache](assets/img/http-request.png)
+
+#VSLIDE
+
+#### 304 Etag
+
+Validating cached responses with ETags
+
+![Simple Etag](assets/img/http-cache-control.png)
+
+#VSLIDE
+
+#### How to?
+
+The only thing left to do is to ensure that the server is providing the necessary ETag tokens.
+ExpressJs & express.static eanble Etag by default
+
 #HSLIDE
 
 Thank you :-)
 
 #VSLIDE
+
+### Slides
+
+https://github.com/CoorpAcademy/tekacademy/httpcache
 
 ### Sources
 https://docs.trafficserver.apache.org/en/4.2.x/sdk/http-headers.en.html
