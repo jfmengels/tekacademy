@@ -25,6 +25,8 @@ Since June 1999
 ### HTTP Header
 ![Header](assets/img/http_headers.jpg)
 
+#VSLIDE
+
 #### REQUEST
 ```HTTP
 GET http://www.tiggerwigger.com/ HTTP/1.0
@@ -37,6 +39,7 @@ Accept-Encoding: gzip
 Accept-Language: en
 Accept-Charset: iso-8859-1, *, utf-8
 ```
+
 #VSLIDE
 
 #### RESPONSE
