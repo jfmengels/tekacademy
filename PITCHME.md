@@ -118,8 +118,7 @@ RFC: Max 1 year
 
 #VSLIDE
 
-### Defining optimal Cache-Control policy
-
+###### Defining optimal Cache-Control policy
 ![Decision Tree](assets/img/http-cache-decision-tree.png)
 
 #HSLIDE
