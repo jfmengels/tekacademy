@@ -138,6 +138,17 @@ no-store | Response is not allowed to be cached and must be fetched in full on e
 
 ![Quick win](assets/img/http-cache-hierarchy.png)
 
+#VSLIDE
+
+### Caching checklist
+
+* Use consistent URLs
+* Ensure that the server provides a validation token (ETag)
+* Identify which resources can be cached by intermediaries
+* Determine the optimal cache lifetime for each resource
+* Determine the best cache hierarchy for your site
+* Minimize churn
+
 #HSLIDE
 
 Thank you :-)
