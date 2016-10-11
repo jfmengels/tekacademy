@@ -151,6 +151,12 @@ no-store | Response is not allowed to be cached and must be fetched in full on e
 
 #HSLIDE
 
+# TD / TP
+
+![https://www.coorpacademy.com](https://www.coorpacademy.com)
+
+#HSLIDE
+
 Thank you :-)
 
 #VSLIDE
