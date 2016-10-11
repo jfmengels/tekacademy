@@ -84,6 +84,46 @@ ExpressJs & express.static enable Etag by default
 
 #HSLIDE
 
+#### Cache-Control
+
+Each resource can define its caching policy via the Cache-Control HTTP header.
+
+![Simple Cache-Control](assets/img/http-cache-control-highlight.png)
+
+#VSLIDE
+
+#### no-cache" and "no-store"
+
+no-cache: need revalidation
+
+no-store: disallow storage
+
+#VSLIDE
+
+#### "public" vs. "private"
+
+public: cache everywhere
+
+private: cache on browser
+![Cdn cache](assets/img/cdn-network.png)
+
+#VSLIDE 
+
+#### "max-age"
+This directive specifies the maximum time in seconds that the fetched response is allowed to be reused from the time of the request.
+
+For example, "max-age=60" indicates that the response can be cached and reused for the next 60 seconds.
+
+RFC: Max 1 year
+
+#VSLIDE
+
+### Defining optimal Cache-Control policy
+
+![Decision Tree](assets/img/http-cache-decision-tree.png)
+
+#HSLIDE
+
 Thank you :-)
 
 #VSLIDE
