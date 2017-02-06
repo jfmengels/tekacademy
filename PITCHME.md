@@ -12,10 +12,9 @@
 
 ## What is AWS Lambda ?
 
-### "Run code without thinking about servers."
-
 A compute service that runs your code on request on a high-availability compute infrastructure and that performs all of the administration of its own.
 
+#### "Run code without thinking about servers."
 
 #HSLIDE
 ## What means serverless ?
@@ -86,6 +85,8 @@ EC2 offers flexibility :
 
 #VSLIDE
 ## Pricing
+![aws](assets/img/pricing.png)
+
 ### Number of Requests
 $ 0.20 per 1 million requests
 
@@ -119,7 +120,7 @@ x86_64
 
 #VSLIDE
 ## The deployment
-![aws](assets/img/travis-ci-icon.svg)
+![aws](assets/img/travis-ci-icon.png)
 
 ```yml
 deploy:
