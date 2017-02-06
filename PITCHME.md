@@ -1,45 +1,54 @@
 # AWS Lambda
+
 ![aws](assets/img/aws-lambda.jpg)
 
 
-# HSLIDE
-### What is AWS Lambda ?
+#HSLIDE
+## What is AWS Lambda ?
+
 ![bird](assets/img/its-a-bird.png)
 
 #VSLIDE
-### What is AWS Lambda ?
-## "Run code without thinking about servers."
+
+## What is AWS Lambda ?
+
+### "Run code without thinking about servers."
+
 A compute service that runs your code on request on a high-availability compute infrastructure and that performs all of the administration of its own.
 
 
 #HSLIDE
-### What means serverless ?
+## What means serverless ?
 
 #VSLIDE
-### No Servers to Manage
+## No Servers to Manage
 ![aws](assets/img/no-servers.png)
+
 AWS operates the compute infrastructure : perform health checks, apply security patches, and do other routine maintenance.
 
 #VSLIDE
-### Continuous Scaling
+## Continuous Scaling
 ![aws](assets/img/continous-scaling.png)
+
 Lambda functions are “stateless,” with no affinity to the underlying infrastructure, so that Lambda can rapidly launch as many copies of the function as needed to scale to the rate of incoming events.
 
 
 #HSLIDE
-### How to use it ?
+## How to use it ?
 
 #VSLIDE
-### The languages
+## The languages
 ![aws](assets/img/code.png)
+
 - Java
 - Node.js
 - Python
 - C#
 
 #VSLIDE
-### The triggers
+## The triggers
 ![aws](assets/img/100x100_benefit_ingergration.png)
+
 - Amazon API Gateway
 - Amazon AWS IoT
 - Amazon Alexa
@@ -56,16 +65,19 @@ Lambda functions are “stateless,” with no affinity to the underlying infrast
 
 
 #HSLIDE
-### ... A small EC2 ?  
+## ... A small EC2 ?  
+
 ![aws](assets/img/AWS_vs.png)
 
 #VSLIDE
-### Same same...
+## Same same...
+
 The Lambda execution environment runs on Amazon EC2.
+
 Same techniques to provide security and separation at the infrastructure and execution levels.
 
 #VSLIDE
-### ... but different !
+## ... but different !
 EC2 offers flexibility :
   - wide range of instance types
   - customisation of the operating system, network and security settings, and the entire software stack
@@ -73,18 +85,18 @@ EC2 offers flexibility :
   - fault tolerance and scalability
 
 #VSLIDE
-### Pricing
-## Number of Requests
+## Pricing
+### Number of Requests
 $ 0.20 per 1 million requests
 
-## Duration
+### Duration
 $ 0.000 016 67 for every GB-second used (rounded up to the nearest 100ms)
 
-## Free per month :
+### Free per month :
 First 1 million requests and 400 000 GB-seconds of compute.
 
 #HSLIDE
-### Glance under the bonnet
+## Glance under the bonnet
 ```python
 import os
 import platform
@@ -103,10 +115,10 @@ x86_64
 
 
 #HSLIDE
-### In practice
+## In practice
 
 #VSLIDE
-### The deployment
+## The deployment
 ![aws](assets/img/travis-ci-icon.svg)
 
 ```yml
