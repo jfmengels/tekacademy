@@ -83,7 +83,7 @@ EC2 offers flexibility :
   - capacity
   - fault tolerance and scalability
 
-#VSLIDE
+#HSLIDE
 ## Pricing
 ![aws](assets/img/pricing.png)
 
