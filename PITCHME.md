@@ -1,8 +1,5 @@
-# Abstract Syntax Trees
+# Test-Driven Development
 ### and their uses
-
-![eslint](assets/img/eslint.png)
-![babel](assets/img/babel.png)
 
 #HSLIDE
 ### What is an AST?
