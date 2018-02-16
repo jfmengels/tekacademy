@@ -1,411 +1,114 @@
-# Test-Driven Development
-### and their uses
+# TDD - Test-Driven Development
 
 #HSLIDE
-### What is an AST?
+### What is Test-Driven Development?
 
-- Representation of code in a big tree-like object
-- Only represents the syntax, not the style
-- (With style: Concrete Syntax Trees)
+- TDD is a **disciplined** method of writing code, that puts the emphasis on testing before writing code in an iterative process
 
-#VSLIDE
-### What does it look like?
-
-```js
-A
-```
-
-```json
-{
-  "type": "Identifier",
-  "name": "A"
-}
-```
+- Brings benefits that can only be gained by writing the code in a certain way. The benefits are absent if the tests are written afterwards
 
 #VSLIDE
-### What does it look like?
+### What TDD is absolutely not
 
-```js
-A + 1
-```
+"I've finished the code, now I'm adding tests"
 
-```json
-{
-  "type": "BinaryExpression",
-  "left": {
-    "type": "Identifier",
-    "name": "A"
-  },
-  "operator": "+",
-  "right": {
-    "type": "Literal",
-    "value": 1
-  }
-}
-```
-
-#VSLIDE
-### What does it look like?
-
-```js
-A + 1 - "bar"
-```
-
-```js
-{
-  "type": "BinaryExpression",
-  "left": { /* tree from previous slide */ },
-  "operator": "-",
-  "right": {
-    "type": "Literal",
-    "value": "bar"
-  }
-}
-```
-
-#VSLIDE
-### What does it look like?
-
-```js
-foo(bar)
-```
-
-```js
-{
-  "type": "CallExpression",
-  "callee": {
-    "type": "Identifier",
-    "name": "foo"
-  },
-  "arguments": [
-    {
-      "type": "Identifier",
-      "name": "bar"
-    }
-  ]
-}
-```
-
-#VSLIDE
-### What does it look like?
-
-The style does not matter.
-These are represented the same way.
-```js
-A + 1 - "bar"
-```
-
-```js
-(A + 1) - 'bar';
-```
-
-
-#VSLIDE
-### Different parsers, different ASTs
-
-- Parser: tool that transforms your code into an AST
-- Plenty of parsers: acorn, espree, babylon, babel-eslint, typescript.
-
-
-
-
-
-
-
-
-
+![Grumpy](assets/img/grumpy.gif)
 
 
 
 #HSLIDE
-## ESLint
-
-![eslint](assets/img/eslint.png)
-
-#VSLIDE
-### ESLint
-
-- Looks at your source code and reports things
-- Consists of a lot of different rules (core/plugin) reporting different things
-
+### The process
+![TDD graph](assets/img/tdd-graph.png)
+- If the test doesn't fail at first, then the test is probably not well written
+- Refactor the code without breaking tests or adding support for new cases (optional)
 
 #VSLIDE
-### ESLint rules
+### The process
 
-```js
-module.exports = {
-  create: create,
-  meta: { /* ... */ }
-};
+- Adding a test: new test, new assertion in an existing test
 
-function create(context) {
-  // context: rule options, global settings,
-  //          getFilename(), ...
-  context.report({
-    node: <node>,
-    message: 'Stop doing things this way'
-  });
-
-  return { /* visitors */ };
-}
-```
+- Whenever you think of a case, write the test title `test.todo('should...')` and implement it later.
 
 #VSLIDE
-### ESLint rules - Visitors
+### The process
 
-```js
-{
-  "type": "BinaryExpression",   // 1
-  "left": {
-    "type": "BinaryExpression", // 2
-    "left": {
-      "type": "Identifier",     // 3
-      "name": "A"
-    },
-    "operator": "+",
-    "right": {                  // 4
-      "type": "Literal",
-      "value": 1
-    }
-  },
-  "operator": "-",
-  "right": {                    // 5
-    "type": "Literal",
-    "value": "bar"
-  }
-}
-```
+- When writing code, try to make it **stupidly simple**, just enough to pass the test
+
+- If you make the code more complex at an iteration, then you may have handled a case for which you do not have a test
+
+- When adding code, always try to think "What could go wrong with what I just added?", and add tests for those cases
 
 #VSLIDE
-### ESLint rules - Visitors
+### The process when fixing bugs
 
-```js
-function create(context) {
-  return {
-    Literal(node) {
-      // node: {
-      //   "type": "Literal",
-      //   "value": string | number
-      // }
-      if (typeof node.value === 'number' &&
-        node.value > 9000
-      ) {
-        context.report({
-          node,
-          message: "It's over 9000!"
-        });
-      }
-    }
-  };
-}
-```
+- Find out the cause of the bug without writing any code (or by removing/stashing it)
+- Write tests and (re)write the code the TDD way
 
 #VSLIDE
-### ESLint rules - No describe.only
+### What to do if code coverage is not 100%?
 
-```js
-describe.only(/* anything */)
-```
-
-```json
-{
-  "type": "CallExpression",
-  "callee": {
-    "type": "MemberExpression",
-    "object": {
-      "type": "Identifier",
-      "name": "describe"
-    },
-    "property": {
-      "type": "Identifier",
-      "name": "only"
-    }
-  }
-}
-```
-
-#VSLIDE
-### ESLint rules - No describe.only
-
-```js
-function create(context) {
-  return {
-    CallExpression(node) {
-      if (node.callee.type === 'MemberExpression' &&
-          node.callee.object.type === 'Identifier' &&
-          node.callee.object.name === 'describe' &&
-          node.callee.property.type === 'Identifier' &&
-          node.callee.property.name === 'only'
-      ) {
-        context.report({
-          node,
-          message: 'No describe.only!'
-        });
-      }
-    }
-  };
-}
-```
-
-#VSLIDE
-### ESLint rules - Testing
-
-```js
-const {RuleTester} = require('eslint');
-const rule = require('./path/to/rule');
-const ruleTester = new RuleTester();
-
-ruleTester.run('no-describe-only', rule, {
-    valid: [
-      'describe()',
-      'only()',
-      'describe.foo()'
-    ],
-    invalid: [
-      {
-        code: 'describe.only()',
-        errors: [ { message: 'No describe.only!' } ]
-      },
-    ]
-});
-```
-
-
-
-
-
+- Find out if the piece of code is still useful and relevant
+- It is isn't, remove it
+- If it is, remove it and then re-add it the TDD way
 
 
 #HSLIDE
-## Babel
-
-![babel](assets/img/babel.png)
+## Good tests
 
 #VSLIDE
-### Babel
-
-- Transforms your source code and writes it into a new file
-- Meant to be used in your build chain
-- Uses Babylon as the parser
-- Uses
-  - New syntactic language features (ES2015+)
-  - Minification
-  - Test coverage
-  - Flow
+### Good test title
+- Reading the test titles should make you understand what the function does and when
+- Explains the results based on the conditions of the test, both being generalized.
+- Form "should <results> when/if <conditions>"
 
 #VSLIDE
-### Babel - Making const immutable
+### Good test title
 
-```js
-const variable = value;
 ```
+// Bad
+should return false for "abcd"
+  // Which behavior is tested here?
+should work // GTFO
 
--->
-
-```js
-const variable = Object.freeze(value);
-```
-
-#VSLIDE
-### Babel - Making const immutable
-
-```js
-const variable = value;
-```
-
-```json
-{
-  "type": "VariableDeclaration",
-  "kind": "const",
-  "declarations": [
-    {
-      "type": "VariableDeclarator",
-      "id": {
-        "type": "Identifier",
-        "name": "variable"
-      },
-      "init": {
-        "type": "Identifier",
-        "name": "value"
-      }
-    }
-  ]
-}
+// Good
+should return false when password
+  is less than expected length
+should return false when password
+  does not contain a number and number is required
+should return true when password
+  contains a number and number is required
+should return true when password
+  does not contain a number and number is not required
 ```
 
 #VSLIDE
-### Babel - Making const immutable
+### Good test title
 
-```js
-export default function (babel) {
-  const { types: t } = babel;
-
-  return {
-    visitor: {
-      VariableDeclaration(path) {
-        if (path.node.kind === 'const') {
-          path.node.declarations.forEach(declaration => {
-            declaration.init = t.callExpression(
-              t.memberExpression(
-                t.identifier('Object'),
-                t.identifier('freeze')
-              ),
-              [declaration.init]
-            );
-          });
-        }
-      }
-    }
-  };
-}
 ```
+// Bad
+should return true for Jack // Why is he considered an admin?
+should return true for Paul // How do Paul and Simon differ
+  // and why does it mandate a different test?
+should return false for Samantha // Is it a gender thing?
 
-
+// Good
+should return true if "admin" is in the user's list of roles
+should return true if "admin" is in the user's list of roles
+  but not the first role // Maybe this was a bug once
+should return false if "admin"
+  is not in the user's list of roles
+```
 
 #HSLIDE
-## Codemods
-
-### jscodeshift
-
-#VSLIDE
-### jscodeshift
-
-- Transforms your source code and saves the changes
-- Meant to be used to update your source code easily
-  - var -> let/const
-  - Lodash v3 -> v4
-  - Treant -> React
-- Uses Recast as the parser
-
+### Benefits
+- Almost guaranteed 100% code coverage
+- Resulting code is really well-tested
+- Components are testable, and therefore probably well-architectured
+- Good test documentation
 
 #VSLIDE
-### jscodeshift - Making const immutable
-
-```js
-export default function transformer(file, api) {
-  const j = api.jscodeshift;
-  return j(file.source)
-    .find(j.VariableDeclaration, {kind: 'const'})
-    .forEach(path => {
-      path.node.declarations.forEach(declaration => {
-        declaration.init = j.callExpression(
-          j.memberExpression(
-            j.identifier('Object'),
-            j.identifier('freeze')
-          ),
-          [declaration.init]
-        );
-      });
-    })
-    .toSource();
-}
-```
-
-
-
-#HSLIDE
-### Tools
-
-- https://github.com/jfmengels/eslint-ava-rule-tester
-- https://github.com/jfmengels/jscodeshift-ava-tester
-- https://astexplorer.net/
+### Cons
+- Time-consuming in the short run
+- Requires good analysis of the problem, in order not to throw away a lot of work
+- Painful when tests are slow
+- Hard to do when components are not easily testable

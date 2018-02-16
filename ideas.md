@@ -10,7 +10,7 @@
 - List the benefits
   - Almost guaranteed 100% code coverage
   - Resulting code is really well-tested
-  - Makes sure each component is testable
+  - Makes sure each component is testable, by making it easy to test
 
 - List the cons
   - If the problem is not well analyzed, you may be concentrating a lot of effort on something that you'll have to throw away.
@@ -34,7 +34,7 @@
 - If you make the code more complex at an iteration, then you may have handled a case for which you do not have a test.
 
 - What to do if code coverage is not 100%?
-  - Find out if the uncovered code is necessary.
+  - Find out if the not-covered code is necessary.
     - If it is unnecessary
       - Remove the code
     - If it is necessary
@@ -79,7 +79,7 @@
         - should return true if "admin" is in the user's list of roles, but not the first role // Ok, we probably had a bug with this at some point
         - should return false if "admin" is not in the user's list of roles // Gotcha
   - Self-sufficient with no effects on other tests
-  - Tests should be as precise as possible
+  - Assertions should be as precise as possible
     - `t.is(user.displayname, 'John Smith')` instead of `t.is(typeof user.displayname, 'string')` or `t.truthy(user.displayname)` (aka `expect(user.displayname).to.exist`) whenever possible.
     - `t.deepEqual(result, {a: 1, b: 2})` instead of `t.is(result.a, 1); t.is(result.b, 2)`, unless the test explicitly checks the value of a certain field (grey area)
 
