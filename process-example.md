@@ -1,6 +1,6 @@
 ### Example process of writing a function TDD-style
 
-- Case study: a function that compares two semantic versions ("1.2.3", ...), that are already parsed and are of the form `{major: number, minor: number, patch: number}` where number is a number >= 0.
+- Case study: a function that compares two simplified semantic versions ("1.2", "2.0", ...), that are already parsed and are of the form `{major: number, minor: numberumber}` where number is a number >= 0.
 
 - Step 1
 ```js
@@ -9,13 +9,13 @@ function compareSemanticVersions(ref1, ref2) {}
 // Fails!
 test('should return 1 if major version of ref2 is higher than major version of ref1', t => {
   const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 1},
-    {major: 2, minor: 1, patch: 1}
+    {major: 1, minor: 1},
+    {major: 2, minor: 1}
   );
   t.is(res, 1);
   const res2 = compareSemanticVersions(
-    {major: 1, minor: 100, patch: 100},
-    {major: 2, minor: 1, patch: 1}
+    {major: 1, minor: 10000},
+    {major: 2, minor: 1}
   );
   t.is(res2, 1);
 });
@@ -31,13 +31,13 @@ function compareSemanticVersions(ref1, ref2) {
 // Passes!
 test('should return 1 if major version of ref2 is higher than major version of ref1', t => {
   const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 1},
-    {major: 2, minor: 1, patch: 1}
+    {major: 1, minor: 1},
+    {major: 2, minor: 1}
   );
   t.is(res, 1);
   const res2 = compareSemanticVersions(
-    {major: 1, minor: 100, patch: 100},
-    {major: 2, minor: 1, patch: 1}
+    {major: 1, minor: 10000},
+    {major: 2, minor: 1}
   );
   t.is(res2, 1);
 });
@@ -53,13 +53,13 @@ function compareSemanticVersions(ref1, ref2) {
 // Fails!
 test('should return -1 if major version of ref2 is lower than major version of ref1', t => {
   const res = compareSemanticVersions(
-    {major: 2, minor: 1, patch: 1},
-    {major: 1, minor: 1, patch: 1}
+    {major: 2, minor: 1},
+    {major: 1, minor: 1}
   );
   t.is(res, -1);
   const res2 = compareSemanticVersions(
-    {major: 2, minor: 1, patch: 1},
-    {major: 1, minor: 100, patch: 100}
+    {major: 2, minor: 1},
+    {major: 1, minor: 10000}
   );
   t.is(res2, -1);
 });
@@ -76,13 +76,13 @@ function compareSemanticVersions(ref1, ref2) {
 // Passes!
 test('should return -1 if major version of ref2 is lower than major version of ref1', t => {
   const res = compareSemanticVersions(
-    {major: 2, minor: 1, patch: 1}
-    {major: 1, minor: 1, patch: 1},
+    {major: 2, minor: 1}
+    {major: 1, minor: 1},
   );
   t.is(res, -1);
   const res2 = compareSemanticVersions(
-    {major: 2, minor: 1, patch: 1}
-    {major: 1, minor: 100, patch: 100},
+    {major: 2, minor: 1}
+    {major: 1, minor: 10000},
   );
   t.is(res2, -1);
 });
@@ -99,13 +99,13 @@ function compareSemanticVersions(ref1, ref2) {
 // Fails!
 test('should return 1 if major versions are equal but minor version of ref2 is higher than minor version of ref1', t => {
   const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 1},
-    {major: 1, minor: 2, patch: 1}
+    {major: 1, minor: 1},
+    {major: 1, minor: 2}
   );
   t.is(res, 1);
   const res2 = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 100},
-    {major: 1, minor: 2, patch: 1}
+    {major: 1, minor: 100},
+    {major: 1, minor: 2}
   );
   t.is(res2, 1);
 });
@@ -123,13 +123,13 @@ function compareSemanticVersions(ref1, ref2) {
 // Passes!
 test('should return 1 if major versions are equal but minor version of ref2 is higher than minor version of ref1', t => {
   const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 1},
-    {major: 1, minor: 2, patch: 1}
+    {major: 1, minor: 1},
+    {major: 1, minor: 2}
   );
   t.is(res, 1);
   const res2 = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 100},
-    {major: 1, minor: 2, patch: 1}
+    {major: 1, minor: 100},
+    {major: 1, minor: 2}
   );
   t.is(res2, 1);
 });
@@ -147,13 +147,13 @@ function compareSemanticVersions(ref1, ref2) {
 // Fails!
 test('should return -1 if major versions are equal but minor version of ref2 is lower than minor version of ref1', t => {
   const res = compareSemanticVersions(
-    {major: 1, minor: 2, patch: 1},
-    {major: 1, minor: 1, patch: 1}
+    {major: 1, minor: 2},
+    {major: 1, minor: 1}
   );
   t.is(res, -1);
   const res2 = compareSemanticVersions(
-    {major: 1, minor: 2, patch: 1},
-    {major: 1, minor: 1, patch: 100}
+    {major: 1, minor: 2},
+    {major: 1, minor: 100}
   );
   t.is(res2, -1);
 });
@@ -172,13 +172,13 @@ function compareSemanticVersions(ref1, ref2) {
 // Passes!
 test('should return -1 if major versions are equal but minor version of ref2 is lower than minor version of ref1', t => {
   const res = compareSemanticVersions(
-    {major: 1, minor: 2, patch: 1},
-    {major: 1, minor: 1, patch: 1}
+    {major: 1, minor: 2},
+    {major: 1, minor: 1}
   );
   t.is(res, -1);
   const res2 = compareSemanticVersions(
-    {major: 1, minor: 2, patch: 1},
-    {major: 1, minor: 1, patch: 100}
+    {major: 1, minor: 2},
+    {major: 1, minor: 100}
   );
   t.is(res2, -1);
 });
@@ -195,12 +195,17 @@ function compareSemanticVersions(ref1, ref2) {
 
 // (New test)
 // Fails!
-test('should return 1 if major and minor versions are equal but patch version of ref2 is higher than patch version of ref1', t => {
+test('should return 0 if all versions are equal', t => {
   const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 1},
-    {major: 1, minor: 1, patch: 2}
+    {major: 1, minor: 1},
+    {major: 1, minor: 1}
   );
-  t.is(res, 1);
+  t.is(res, 0);
+  const res2 = compareSemanticVersions(
+    {major: 100, minor: 10000},
+    {major: 100, minor: 10000}
+  );
+  t.is(res2, 0);
 });
 ```
 
@@ -211,99 +216,6 @@ function compareSemanticVersions(ref1, ref2) {
   if (ref2.major < ref1.major) { return -1; }
   if (ref2.minor > ref1.minor) { return 1; }
   if (ref2.minor < ref1.minor) { return -1; }
-  return 1;
-}
-
-// (Same test)
-// Passes!
-test('should return 1 if major and minor versions are equal but patch version of ref2 is higher than patch version of ref1', t => {
-  const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 1},
-    {major: 1, minor: 1, patch: 2}
-  );
-  t.is(res, 1);
-});
-```
-
-- Step 11
-```js
-function compareSemanticVersions(ref1, ref2) {
-  if (ref2.major > ref1.major) { return 1; }
-  if (ref2.major < ref1.major) { return -1; }
-  if (ref2.minor > ref1.minor) { return 1; }
-  if (ref2.minor < ref1.minor) { return -1; }
-  return 1;
-}
-
-// (New test)
-// Fails!
-test('should return -1 if major and minor versions are equal but patch version of ref2 is lower than patch version of ref1', t => {
-  const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 2},
-    {major: 1, minor: 1, patch: 1}
-  );
-  t.is(res, -1);
-});
-```
-
-- Step 12
-```js
-function compareSemanticVersions(ref1, ref2) {
-  if (ref2.major > ref1.major) { return 1; }
-  if (ref2.major < ref1.major) { return -1; }
-  if (ref2.minor > ref1.minor) { return 1; }
-  if (ref2.minor < ref1.minor) { return -1; }
-  if (ref2.patch > ref1.patch) { return 1; }
-  return -1;
-}
-
-// (Same test)
-// Passes!
-test('should return -1 if major and minor versions are equal but patch version of ref2 is lower than patch version of ref1', t => {
-  const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 2},
-    {major: 1, minor: 1, patch: 1}
-  );
-  t.is(res, -1);
-});
-```
-
-- Step 13
-```js
-function compareSemanticVersions(ref1, ref2) {
-  if (ref2.major > ref1.major) { return 1; }
-  if (ref2.major < ref1.major) { return -1; }
-  if (ref2.minor > ref1.minor) { return 1; }
-  if (ref2.minor < ref1.minor) { return -1; }
-  if (ref2.patch > ref1.patch) { return 1; }
-  return -1;
-}
-
-// (New test)
-// Fails!
-test('should return 0 if all versions are equal', t => {
-  const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 1},
-    {major: 1, minor: 1, patch: 1}
-  );
-  t.is(res, 0);
-  const res2 = compareSemanticVersions(
-    {major: 100, minor: 100, patch: 100},
-    {major: 100, minor: 100, patch: 100}
-  );
-  t.is(res2, 0);
-});
-```
-
-- Step 14
-```js
-function compareSemanticVersions(ref1, ref2) {
-  if (ref2.major > ref1.major) { return 1; }
-  if (ref2.major < ref1.major) { return -1; }
-  if (ref2.minor > ref1.minor) { return 1; }
-  if (ref2.minor < ref1.minor) { return -1; }
-  if (ref2.patch > ref1.patch) { return 1; }
-  if (ref2.patch < ref1.patch) { return -1; }
   return 0;
 }
 
@@ -311,13 +223,13 @@ function compareSemanticVersions(ref1, ref2) {
 // Passes!
 test('should return 0 if all versions are equal', t => {
   const res = compareSemanticVersions(
-    {major: 1, minor: 1, patch: 1},
-    {major: 1, minor: 1, patch: 1}
+    {major: 1, minor: 1},
+    {major: 1, minor: 1}
   );
   t.is(res, 0);
   const res2 = compareSemanticVersions(
-    {major: 100, minor: 100, patch: 100},
-    {major: 100, minor: 100, patch: 100}
+    {major: 100, minor: 10000},
+    {major: 100, minor: 10000}
   );
   t.is(res2, 0);
 });
@@ -336,8 +248,7 @@ function compare(a, b) {
 function compareSemanticVersions(ref1, ref2) {
   return (
     compare(ref1.major, ref2.major) ||
-    compare(ref1.minor, ref2.minor) ||
-    compare(ref1.patch, ref2.patch)
+    compare(ref1.minor, ref2.minor)
   );
 }
 
@@ -347,8 +258,8 @@ function compareSemanticVersions(ref1, ref2) {
 - Without TDD, Adding tests to get 100% code coverage.
 ```js
 test('should compare semantic versions correctly', t => {
-  const version1 = {major: 1, minor: 1, patch: 1};
-  const version2 = {major: 2, minor: 1, patch: 1};
+  const version1 = {major: 1, minor: 1};
+  const version2 = {major: 2, minor: 1};
   t.is(compareSemanticVersions(version1, version1), 0);
   t.is(compareSemanticVersions(version1, version2), 1);
   t.is(compareSemanticVersions(version2, version1), -1);
