@@ -27,7 +27,9 @@
 
 - Adding a test: new test, new assertion in an existing test
 
-- Whenever you think of a case, write the test title `test.todo('should...')` and implement it later.
+- Whenever you think of a case, write the test title `test.todo('should...')` and implement it later
+
+- Never touch the code without writing tests first, unless when refactoring
 
 #VSLIDE
 ### The process
@@ -50,6 +52,7 @@
 - Find out if the piece of code is still useful and relevant
 - It is isn't, remove it
 - If it is, remove it and then re-add it the TDD way
+
 
 
 #HSLIDE
@@ -99,15 +102,238 @@ should return false if "admin"
   is not in the user's list of roles
 ```
 
+#VSLIDE
+### Good test
+
+- A test should be self-sufficient with no effects on other tests
+- Assertions should be as precise as possible
+
+```js
+t.is(user.name, 'John Smith');
+// instead of
+t.is(typeof user.name, 'string');
+t.truthy(user.name);
+
+t.deepEqual(res, {a: 1, b: 2})
+// instead of
+t.is(res.a, 1);
+t.is(res.b, 2);
+```
+
+
+
 #HSLIDE
-### Benefits
+## TDD by example
+
+#VSLIDE
+### Semantic version comparator
+- Objective: Write function that compares two (simplified) semver values
+- Values are of the form "{major: number, minor: number}"
+- Returns +1 if the first version is greater than the second
+- Returns -1 if the first version is less than the second
+- Returns 0 if they are equal
+
+#VSLIDE
+### Iteration 1 - Writing failing test
+```js
+function comp(ref1, ref2) {}
+
+test(`should return 1 if major version of first
+  is greater than major of second`, t => {
+  t.is(
+    comp({major: 2, minor: 1}, {major: 1, minor: 1}),
+    1
+  );
+  t.is(
+    comp({major: 2, minor: 1}, {major: 1, minor: 10000}),
+    1
+  );
+});
+```
+
+#VSLIDE
+### Iteration 1 - Writing stupid code
+```js
+function comp(ref1, ref2) {
+  return 1;
+}
+```
+
+#VSLIDE
+### Iteration 2 - Writing failing test
+```js
+test(`should return -1 if major version of first
+  is less than major of second`, t => {
+  t.is(
+    comp({major: 1, minor: 1}, {major: 2, minor: 1}),
+    -1
+  );
+  t.is(
+    comp({major: 1, minor: 10000}, {major: 2, minor: 1}),
+    -1
+  );
+});
+```
+
+#VSLIDE
+### Iteration 2 - Writing code
+```js
+function comp(ref1, ref2) {
+  if (ref1.major > ref2.major) { return 1; }
+  return -1;
+}
+```
+
+#VSLIDE
+### Iteration 3 - Writing failing test
+```js
+test(`should return 1 if major versions are equal but
+  minor of first is greater than minor of second`, t => {
+  t.is(
+    comp({major: 1, minor: 2}, {major: 1, minor: 1}),
+    1
+  );
+  t.is(
+    comp({major: 1, minor: 1}, {major: 1, minor: 0}),
+    1
+  );
+});
+```
+
+#VSLIDE
+### Iteration 3 - Writing code
+```js
+function comp(ref1, ref2) {
+  if (ref1.major > ref2.major) { return 1; }
+  if (ref1.major < ref2.major) { return -1; }
+  return 1;
+}
+```
+
+#VSLIDE
+### Iteration 4 - Writing failing test
+```js
+test(`should return -1 if major versions are equal but
+  minor of first is less than minor of second`, t => {
+  t.is(
+    comp({major: 1, minor: 1}, {major: 1, minor: 2}),
+    -1
+  );
+  t.is(
+    comp({major: 1, minor: 0}, {major: 1, minor: 1}),
+    -1
+  );
+});
+```
+
+#VSLIDE
+### Iteration 4 - Writing code
+```js
+function comp(ref1, ref2) {
+  if (ref1.major > ref2.major) { return 1; }
+  if (ref1.major < ref2.major) { return -1; }
+  if (ref1.minor > ref2.minor) { return 1; }
+  return -1;
+}
+```
+
+#VSLIDE
+### Iteration 5 - Writing failing test
+```js
+test('should return 0 if all versions are equal', t => {
+  t.is(comp({major: 1, minor: 1}, {major: 1, minor: 1}), 0);
+});
+```
+
+#VSLIDE
+### Iteration 5 - Writing code
+```js
+function comp(ref1, ref2) {
+  if (ref1.major > ref2.major) { return 1; }
+  if (ref1.major < ref2.major) { return -1; }
+  if (ref1.minor > ref2.minor) { return 1; }
+  if (ref1.minor < ref2.minor) { return -1; }
+  return 0;
+}
+```
+
+#VSLIDE
+### Iteration 5 - Refactoring
+```js
+function compareNumbers(a, b) {
+  if (a > b) {
+    return 1;
+  }
+  return a < b ? -1 : 0;
+}
+
+function comp(ref1, ref2) {
+  return (
+    compareNumbers(ref1.major, ref2.major) ||
+    compareNumbers(ref1.minor, ref2.minor)
+  );
+}
+```
+
+#VSLIDE
+### Resulting documentation
+
+![tests result](assets/img/test-results.png)
+
+#VSLIDE
+### Without TDD
+If we added tests afterwards to get 100% code coverage.
+```js
+test('should compare semantic versions correctly', t => {
+  const version1 = {major: 1, minor: 1};
+  const version2 = {major: 2, minor: 1};
+  t.is(comp(version1, version1), 0);
+  t.is(comp(version1, version2), 1);
+  t.is(comp(version2, version1), -1);
+});
+```
+
+
+
+#HSLIDE
+### Code coverage
+- Code coverage is a measure of non-tested code, not a measure of test quality
+- "70% code coverage" should not be read as "70% of the code is (well-) tested", but as "30% of the code can be deleted without tests failing".
+- There are no good metrics to indicate and/or verify how well tested a piece of code is. That's why the benefits of TDD are important and hard to reproduce after the fact.
+
+#VSLIDE
+### Code coverage
+- An object with plenty of fields counts as one line or instruction. It's easy to think that it's covered without having any tests that check the produced values.
+
+#VSLIDE
+### Code coverage
+
+```js
+function foo(value) {
+  return {
+    value,
+    a: Math.floor(value * 20 / 100) + 100 / value,
+    b: Array({length: value})
+      .map(n => ({n, value: 100 / value}))
+  };
+}
+test('should foo', t => {
+  foo(); // 100% code coverage for `foo`
+});
+// But tests would still pass and code coverage
+// would still be 100% if we change `foo` to
+const foo = () => {};
+```
+
+#VSLIDE
+### TDD Benefits
 - Almost guaranteed 100% code coverage
 - Resulting code is really well-tested
 - Components are testable, and therefore probably well-architectured
 - Good test documentation
 
 #VSLIDE
-### Cons
+### TDD Cons
 - Time-consuming in the short run
 - Requires good analysis of the problem, in order not to throw away a lot of work
 - Painful when tests are slow
