@@ -17,16 +17,6 @@
 - Can be used with and interact with JavaScript code
 - **Produces no runtime exception**
 
-#VSLIDE
-### Functional programming
-
-Functional programming is about eliminating side-effects
-where you can, control them where you can't.
-                                            Kris Jenkins
-
-https://www.youtube.com/watch?v=tQRtTSIpye4
-http://blog.jenkster.com/2015/12/what-is-functional-programming.html
-
 #HSLIDE
 ## Compiler
 
@@ -45,7 +35,7 @@ result = addNumber 1 "2"
 ```
 
 ![](assets/img/elm-type-mismatch.png)
-(Try it: https://ellie-app.com/3DtT78bwsqxa1)
+https://ellie-app.com/3DtT78bwsqxa1
 
 #VSLIDE
 
@@ -58,7 +48,7 @@ result = addNumber 1 2
 ```
 
 ![](assets/img/elm-variable-not-found.png)
-(Try it: https://ellie-app.com/3DtCx94GVkda1)
+https://ellie-app.com/3DtCx94GVkda1
 
 #VSLIDE
 
@@ -116,8 +106,9 @@ httpResultWithSuccess = { httpResult | code = 200 }
 #VSLIDE
 ### If else
 
-- No if without else
-- It's an expression
+- No if without an else
+- The whole thing is an expression
+- Every "branch" needs to return the same type
 
 ```elm
 result =
@@ -179,23 +170,53 @@ getName a = a.name
 ```
 
 #VSLIDE
-### Creating types
+### Type aliases
+
+Great for documentation and simplifying
+
+```elm
+type alias User =
+    { name : String
+    , age: Int
+    }
+
+updateName : String -> User -> User
+-- Similar to
+updateName : String -> {name: String, age: Int} -> {name: String, age: Int}
+```
+
+#VSLIDE
+### Type aliases
+
+Fields are not optional
+
+```elm
+type alias User =
+    { name : String
+    , age: Int
+    }
+
+-- The compiler will not compile, as `age` is absent
+user : User
+user =
+    { name = "Jeroen"
+    }
+```
+
+#VSLIDE
+### Creating custom types
 
 ```elm
 type Bool = True | False
 -- This is actually how Bool is implemented
 
 type HttpResponse
-  = HttpError Int String
-  | HttpSuccess String
+  = HttpError Int String -- HttpError will contain a Int and a String value
+  | HttpSuccess String -- HttpSuccess will contain a String value
 
-type Maybe a
+type Maybe a -- Maybe is generic and can take any type as argument
   = Nothing
   | Just a
-
-type alias User = {
-  name : String
-}
 ```
 
 #VSLIDE
@@ -219,10 +240,20 @@ errorMessage error =
 ## Concepts
 
 #VSLIDE
+### Functional programming
+
+Functional programming is about eliminating side-effects
+where you can, control them where you can't.
+                                            Kris Jenkins
+
+https://www.youtube.com/watch?v=tQRtTSIpye4
+http://blog.jenkster.com/2015/12/what-is-functional-programming.html
+
+#VSLIDE
 ### Immutability
 
-All values in Elm are immutable.
-- You can declare variables, but there is no reassignment
+All variables in Elm are constants.
+- You can declare constants, but there is no reassignment
 - There are no operators or functions that mutate data
 
 ```elm
@@ -231,7 +262,7 @@ a = 2 -- NOT OK: reassigning a variable
 ```
 
 #VSLIDE
-### No side-effects
+### No side-effects, only well-handled effects
 
 Effects are represented by Tasks.
 Tasks are plain data structures composed of:
@@ -247,7 +278,7 @@ getRandomGif topic =
     url =
       "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
   in
-    Task.perform HttpError HttpSuccess (Http.get decodeGifUrl url)
+    Http.send HttpError HttpSuccess (Http.getString url)
 ```
 
 #HSLIDE
@@ -258,9 +289,11 @@ getRandomGif topic =
 Basic components that form a reusable architecture
 
 ```elm
+import Browser
+
 main =
-  Html.beginnerProgram
-    { model = model
+  Browser.sandbox
+    { init = initialModel
     , view = view
     , update = update
     }
@@ -329,20 +362,26 @@ view model =
 viewError: Maybe String -> Html Msg
 viewError error =
   case error of
-    Just s -> span [ class "error" ] [ text s ]
+    Just err -> span [ class "error" ] [ text err ]
     Nothing -> span [] [ text "" ]
-
-viewBrands: List String -> Html Msg
-viewBrands brands =
-  div [ class "brands" ]
-      (List.map viewBrand brands)
 
 viewBrand: String -> Html Msg
 viewBrand brand =
   span
     [ class "brand", onClick (\_ -> EditBrand brand) ]
     [ text brand ]
+
+viewBrands: List String -> Html Msg
+viewBrands brands =
+  div [ class "brands" ]
+      (List.map viewBrand brands)
 ```
+
+#VSLIDE
+### In a bad drawing
+
+![](assets/img/the-elm-architecture.jpg)
+
 
 #VSLIDE
 ### Re-using a component
@@ -375,7 +414,7 @@ view model =
 import WebSocket
 
 main =
-  App.program
+  Browser.document
     { init = init, view = view, update = update, subscriptions = subscriptions }
 
 subscriptions : Model -> Sub Msg
@@ -386,14 +425,11 @@ update: Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Send ->
-      ({ model }, WebSocket.send "ws://echo.websocket.org" "a message")
+      (model, WebSocket.send "ws://echo.websocket.org" "a message")
 
     NewMessage str ->
       ({ model | messages = str :: messages }, Cmd.none)
 ```
-
-#HSLIDE
-## Live-coding
 
 #HSLIDE
 ## Ports
@@ -407,28 +443,29 @@ The JS code may crash, but the Elm code won't.
 
 Elm has its own package manager.
 
-Packages are semver enforced: API changes require a major version.
+Packages are semver enforced: breaking changes require a major version.
 
 #VSLIDE
 ## :+1:
 
-- Types are awesome (see my Flow talk)
-- Having no crashes is awesome
-- Easy to refactor a lot
+- Having guarantees and no crashes is awesome
+- Refactorings are easy
 - Easy to read, because there is no magic
-- Pretty easy to learn
+- The language is small, so it's pretty fast to learn
 
 #VSLIDE
 ## :-1:
 
 - Need to learn how to do some simple things again
-- There is no magic, but there is a lot of boilerplate
+- There is no magic, but there is a lot of boilerplate (but there are worse things than boilerplate)
 - Young language
 - Small (but growing) community
 
 #VSLIDE
-##Resources
+## Additional resources
 
-- https://ellie-app.com/
 - https://guide.elm-lang.org
+- https://elmlang.slack.com/
+- https://ellie-app.com/
 - https://www.manning.com/books/elm-in-action
+- https://github.com/avh4/elm-format
