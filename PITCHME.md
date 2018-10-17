@@ -30,23 +30,22 @@ http://blog.jenkster.com/2015/12/what-is-functional-programming.html
 #HSLIDE
 ## Compiler
 
-The aim of Elm's compiler is to compile your Elm code into a crashless JS code
-- makes sure that there are no type mismatches
-- makes sure that all cases/branches are handled
-
-With the absence of null/undefined in the language,
-crashes are then automatically detected.
+- The aim of Elm's compiler is to compile your Elm code into a JS code that won't crash
+- The language is made so that this guarantee can be enforced
+- It tries to be as helpful and friendly as possible, and to help you fix the errors
 
 #VSLIDE
 
-When you have errors, it tries to be very friendly and helpful, and to assist you in fixing the error
+Type mismatch
 
 ```elm
-"Hello" + " world"
+addNumbers a b = a + b
+
+result = addNumber 1 "2"
 ```
 
-![](assets/img/elm-string-concat-operator-error.png)
-(Try it: https://ellie-app.com/3DtgLTTpSjpa1)
+![](assets/img/elm-type-mismatch.png)
+(Try it: https://ellie-app.com/3DtT78bwsqxa1)
 
 #VSLIDE
 
