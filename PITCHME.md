@@ -7,7 +7,8 @@
 
 - Made in 2012 by Evan Czaplicki
 - Easy to use functional programming language
-- Made to develop webapps
+- Designed to develop webapps
+- Website: http://elm-lang.org/
 
 #VSLIDE
 ### What is it?
@@ -15,6 +16,16 @@
 - Compiles to JavaScript
 - Can be used with and interact with JavaScript code
 - **Produces no runtime exception**
+
+#VSLIDE
+### Functional programming
+
+Functional programming is about eliminating side-effects
+where you can, control them where you can't.
+                                            Kris Jenkins
+
+https://www.youtube.com/watch?v=tQRtTSIpye4
+http://blog.jenkster.com/2015/12/what-is-functional-programming.html
 
 #HSLIDE
 ## Compiler
@@ -28,26 +39,41 @@ crashes are then automatically detected.
 
 #VSLIDE
 
-When you have errors,
-it tries to be very friendly and helpful
+When you have errors, it tries to be very friendly and helpful, and to assist you in fixing the error
 
 ```elm
 "Hello" + " world"
 ```
 
 ![](assets/img/elm-string-concat-operator-error.png)
+(Try it: https://ellie-app.com/3DtgLTTpSjpa1)
 
 #VSLIDE
 
 Variable not found
 
 ```elm
-addSomeNumbers a b = a + b
+addNumbers a b = a + b
 
-result = addSomeNumber 1 2
+result = addNumber 1 2
 ```
 
 ![](assets/img/elm-variable-not-found.png)
+(Try it: https://ellie-app.com/3DtCx94GVkda1)
+
+#VSLIDE
+
+Import cycle
+
+```elm
+-- in Main.elm
+import Foo exposing (..)
+
+-- in Foo.elm
+import Main exposing (..)
+```
+
+![](assets/img/elm-import-cycle.png)
 
 #HSLIDE
 ## Language Basics
@@ -56,7 +82,7 @@ result = addSomeNumber 1 2
 ### Basic types
 
 ```elm
-1 + 2 -- number
+1 + 2 -- Int
 "hello" ++ " world" -- String - only with " quotes
 ```
 
@@ -68,7 +94,7 @@ result = addSomeNumber 1 2
 
 ```elm
 names = ["John", "Jane"] -- List String
-result = (404, "Not found") -- Tuple -- (number, String)
+result = (404, "Not found") -- Tuple -- (Int, String)
 
 List.reverse names
 -- ["Jane", "John"] -- List String
@@ -78,40 +104,14 @@ List.reverse names
 ### Records
 
 ```elm
-httpResult = { code = 404, error = "Not found" }
--- { code : number, error : String }
+httpResult = { code = 403, error = "Forbidden" }
+-- { code : Int, error : String }
 
-httpResult.code -- 404
-.code httpResult -- 404
+httpResult.code -- 403
+.code httpResult -- 403
 
 httpResultWithSuccess = { httpResult | code = 200 }
--- { code = 200, error = "Not found" }
-```
-
-#VSLIDE
-### Function declaration
-
-```elm
-add a b =
-  a + b -- function body
-
-divide a b =
-  let
-    quotient = a // b
-    remainder = a % b
-  in
-    (quotient, remainder)
-```
-
-#VSLIDE
-### Functions usage
-
-```elm
-result = add 1 2
-
--- functions are curried
-add1 = add 1
-result = add1 2
+-- { code = 200, error = "Forbidden" }
 ```
 
 #VSLIDE
@@ -128,6 +128,37 @@ result =
     2
 ```
 
+#VSLIDE
+### Function declaration
+
+```elm
+add a b =
+  a + b -- function return value
+
+divide a b =
+  let
+    -- function intermediate constants
+    quotient = a // b
+    remainder = a % b
+  in
+    (quotient, remainder) -- function return value
+```
+
+#VSLIDE
+### Currying and partial application
+
+Functions are curried and support partial application
+
+```elm
+result = add 1 2
+-- 3
+
+-- add1: Function that will add 1 to parameter that it's given
+add1 = add 1
+result = add1 2
+-- 3
+```
+
 #HSLIDE
 ## Types
 
@@ -138,11 +169,11 @@ Type annotations are meant for programmers,
 because Elm can discover most of the types on its own.
 
 ```elm
-add: number -> number -> String
---   number -> -- Takes a number as a parameter
---             number -> -- Takes a number as a parameter
---                       String -- returns a String
-add a b = toString (a + b)
+add: Int -> Int -> String
+--   Int -> -- Takes a integer as a parameter
+--          Int -> -- Takes a integer as a parameter
+--                 String -- returns a String
+add a b =  String.fromInt (a + b)
 
 getName: { name: String } -> String
 getName a = a.name
@@ -156,7 +187,7 @@ type Bool = True | False
 -- This is actually how Bool is implemented
 
 type HttpResponse
-  = HttpError number String
+  = HttpError Int String
   | HttpSuccess String
 
 type Maybe a
@@ -169,7 +200,7 @@ type alias User = {
 ```
 
 #VSLIDE
-### Conditional case
+### Pattern matching
 
 ```elm
 fib n =
@@ -395,3 +426,10 @@ Packages are semver enforced: API changes require a major version.
 - There is no magic, but there is a lot of boilerplate
 - Young language
 - Small (but growing) community
+
+#VSLIDE
+##Resources
+
+- https://ellie-app.com/
+- https://guide.elm-lang.org
+- https://www.manning.com/books/elm-in-action
