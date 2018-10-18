@@ -9,7 +9,7 @@ What I want
 I want to build products
 
 #VSLIDE
-but I am scared of breaking things
+but I don't like breaking things
 
 #VSLIDE
 
@@ -80,7 +80,7 @@ Type mismatch
 ```elm
 addNumbers a b = a + b
 
-result = addNumber 1 "2"
+result = addNumbers 1 "2"
 ```
 
 ![](assets/img/elm-type-mismatch.png)
@@ -95,8 +95,8 @@ addNumbers a b = a + b
 
 result = addNumber 1 2
 ```
-
 ![](assets/img/elm-variable-not-found.png)
+
 https://ellie-app.com/3DtCx94GVkda1
 
 #VSLIDE
@@ -123,17 +123,12 @@ All variables in Elm are constants.
 - You can declare constants, but there is no reassignment
 - There are no operators or functions that mutate data
 
-```elm
-a = 1 -- OK: declaring a variable
-a = 2 -- NOT OK: reassigning a variable
-```
-
 #VSLIDE
 ### Basic types
 
 ```elm
 1 + 2 -- Int
-"hello" ++ " world" -- String - only with " quotes
+"hello" ++ " world" -- String
 ```
 
 #VSLIDE
@@ -144,10 +139,8 @@ a = 2 -- NOT OK: reassigning a variable
 
 ```elm
 names = ["John", "Jane"] -- List String
-result = (404, "Not found") -- Tuple -- (Int, String)
 
-List.reverse names
--- ["Jane", "John"] -- List String
+result = (404, "Not found") -- Tuple -- (Int, String)
 ```
 
 #VSLIDE
@@ -156,9 +149,6 @@ List.reverse names
 ```elm
 httpResult = { code = 403, error = "Forbidden" }
 -- { code : Int, error : String }
-
-httpResult.code -- 403
-.code httpResult -- 403
 
 httpResultWithSuccess = { httpResult | code = 200 }
 -- { code = 200, error = "Forbidden" }
@@ -180,6 +170,18 @@ result =
 ```
 
 #VSLIDE
+### Pattern matching
+
+```elm
+boolToString: Bool -> String
+boolToString bool =
+  case bool of
+    True -> "True"
+    False -> "False"
+```
+
+
+#VSLIDE
 ### Function declaration
 
 ```elm
@@ -196,7 +198,7 @@ divide a b =
 ```
 
 #VSLIDE
-### Currying and partial application
+### Function usage
 
 Functions are curried and support partial application
 
@@ -209,6 +211,99 @@ add1 = add 1
 result = add1 2
 -- 3
 ```
+
+#HSLIDE
+
+Let's code an app: Message board
+
+https://ellie-app.com/3DYXXYSBFRga1
+
+#VSLIDE
+
+Display messages
+
+https://ellie-app.com/3DYTwcT2tLma1
+
+#VSLIDE
+
+```elm
+main =
+    Browser.sandbox
+        { init = init
+        , view = view
+        , update = update
+        }
+```
+
+#VSLIDE
+
+```elm
+init =
+    { messages = [ "Oh hi there!", "How you doing?" ] }
+
+update msg model =
+    model
+
+view model =
+    ul [] (List.map viewMessage model.messages)
+
+viewMessage message =
+    li [] [ text message ]
+```
+
+#VSLIDE
+
+Add an input field
+
+https://ellie-app.com/3DYXsZHfG36a1
+
+#VSLIDE
+
+```elm
+init = { messages = [ "Oh hi there!", "How you doing?" ], content = "" }
+
+type Msg = SetContent String
+update msg model =
+    case msg of
+        SetContent str ->
+            { model | content = str }
+
+view model =
+    div []
+        [ ul [] (List.map viewMessage model.messages)
+        , input [ type_ "text", onInput SetContent, value model.content ] []
+        ]
+```
+
+#VSLIDE
+
+Post a message
+
+https://ellie-app.com/3DYXXYSBFRga1
+
+#VSLIDE
+
+```elm
+type Msg = SetContent String | PostMessage
+
+update msg model =
+    case msg of
+        SetContent str -> { model | content = str }
+        PostMessage ->
+            { model | content = "", messages = List.append model.messages [ model.content ] }
+
+view model =
+    div []
+        [ ul [] (List.map viewMessage model.messages)
+        , input [ type_ "text", onInput SetContent, value model.content ] []
+        , button [ onClick PostMessage ] [ text "Post" ]
+        ]
+```
+
+#VSLIDE
+### The Elm architecture
+
+![](assets/img/the-elm-architecture.jpg)
 
 #HSLIDE
 ## Types
@@ -224,7 +319,7 @@ add: Int -> Int -> String
 --   Int -> -- Takes a integer as a parameter
 --          Int -> -- Takes a integer as a parameter
 --                 String -- returns a String
-add a b =  String.fromInt (a + b)
+add a b = String.fromInt (a + b)
 
 getName: { name: String } -> String
 getName a = a.name
@@ -243,56 +338,25 @@ type alias User =
 
 updateName : String -> User -> User
 -- Similar to
-updateName : String -> {name: String, age: Int} -> {name: String, age: Int}
+updateName :
+  String -> {name: String, age: Int} -> {name: String, age: Int}
 ```
 
 #VSLIDE
-### Type aliases
-
-Fields are not optional
+### Creating union types
 
 ```elm
-type alias User =
-    { name : String
-    , age: Int
-    }
-
--- The compiler will not compile, as `age` is absent
-user : User
-user =
-    { name = "Jeroen"
-    }
-```
-
-#VSLIDE
-### Creating custom types
-
-```elm
-type Bool = True | False
--- This is actually how Bool is implemented
+type CardColor = Black | Red
+type CardValue = Ace | King | Queen | Jack | Two | Three | ...
+type alias Card = { color: CardColor, value: CardValue }
 
 type HttpResponse
-  = HttpError Int String -- HttpError will contain a Int and a String value
-  | HttpSuccess String -- HttpSuccess will contain a String value
-
-type Maybe a -- Maybe is generic and can take any type as argument
-  = Nothing
-  | Just a
-```
-
-#VSLIDE
-### Pattern matching
-
-```elm
-errorMessage: Maybe String -> String
-errorMessage error =
-  case error of
-    Nothing -> ""
-    Just message -> message
+  = HttpError Int String -- will contain a Int and a String value
+  | HttpSuccess String   -- will contain a String value
 ```
 
 #HSLIDE
-## Concepts
+## Effects
 
 #VSLIDE
 ### Functional programming
@@ -307,190 +371,27 @@ http://blog.jenkster.com/2015/12/what-is-functional-programming.html
 #VSLIDE
 ### No side-effects, only well-handled effects
 
-Effects are represented by Tasks.
-Tasks are plain data structures composed of:
-- The action to do
-- What to do (dispatch) on success
-- What to do (dispatch) on failure
-
+To apply effects, create a request for it, and return it to the runtime.
 They are passed to Elm's runtime which will execute it
 
 ```elm
+update msg model =
+    case msg of
+      RequestUrl -> (model, getRandomGif "cats")
+      NewGif body -> ({model | body = body}, Cmd.none)
+
+
+giphyUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC"
 getRandomGif topic =
-  let
-    url =
-      "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
-  in
-    Http.send HttpError HttpSuccess (Http.getString url)
-```
-
-#HSLIDE
-### The Elm Architecture
-
-#### Model view update
-
-Basic components that form a reusable architecture
-
-```elm
-import Browser
-
-main =
-  Browser.sandbox
-    { init = initialModel
-    , view = view
-    , update = update
-    }
-```
-
-
-#VSLIDE
-### Model
-
-The state of your application
-
-```elm
-type alias Model =
-  { userNames: List String,
-  , error: Maybe String
-  }
-
-initialModel : Model
-initialModel =
-  { userNames: [], error: Nothing }
+    Http.send NewGif (Http.getString giphyUrl)
 ```
 
 #VSLIDE
-### update
-
-A way to update your state
-```elm
-type Msg
-    = FetchUsersSuccess (List String)
-    | FetchUsersError String
-    | AddUser String
-
-update: Msg -> Model -> Model
-update msg model =
-  case msg of
-    FetchUsersSuccess users ->
-      { model | users = users, error = Nothing }
-    FetchUsersError error ->
-      { model | error = Just error }
-    AddUser user ->
-      { model | users = user :: model.users}
-```
-
-#VSLIDE
-### view
-
-A way to view your state as HTML
-
-Uses Elm's own virtual dom library
-
-```elm
-import Html exposing (..)
-
-view : Model -> Html Msg
-view model =
-  div [] [ viewError model.error
-         , viewBrands model.brands
-         , button
-            [onClick (AddUser "Jeroen")]
-            [text "Add user"]
-         ]
-```
-
-#VSLIDE
-### view
-
-```elm
-viewError: Maybe String -> Html Msg
-viewError error =
-  case error of
-    Just err -> span [ class "error" ] [ text err ]
-    Nothing -> span [] [ text "" ]
-
-viewBrand: String -> Html Msg
-viewBrand brand =
-  span
-    [ class "brand", onClick (\_ -> EditBrand brand) ]
-    [ text brand ]
-
-viewBrands: List String -> Html Msg
-viewBrands brands =
-  div [ class "brands" ]
-      (List.map viewBrand brands)
-```
-
-#VSLIDE
-### In a bad drawing
-
-![](assets/img/the-elm-architecture.jpg)
-
-
-#VSLIDE
-### Re-using a component
-
-```elm
-import BrandsPage
-
-type alias Model = {
-  brands: BrandsPage.Model,
-  users: UserPage.Model
-}
-
-type Msg
-  = Reset
-  | BrandsPage.Msg
-
-update msg model =
-  case msg of
-    BrandsPage.Msg ->
-      { model | brands = BrandsPage.update msg model.brands }
-
-view model =
-  div [] [ BrandsPage.view model.brands ]
-```
-
-#VSLIDE
-### Optional: Subscriptions
-
-```elm
-import WebSocket
-
-main =
-  Browser.document
-    { init = init, view = view, update = update, subscriptions = subscriptions }
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  WebSocket.listen "ws://echo.websocket.org" NewMessage
-
-update: Msg -> Model -> (Model, Cmd Msg)
-update msg model =
-  case msg of
-    Send ->
-      (model, WebSocket.send "ws://echo.websocket.org" "a message")
-
-    NewMessage str ->
-      ({ model | messages = str :: messages }, Cmd.none)
-```
-
-#HSLIDE
 ## Ports
 
 System to communicate safely with JavaScript code by message passing.
 
 The JS code may crash, but the Elm code won't.
-
-#VSLIDE
-## Package manager
-
-Elm has its own package manager.
-
-Packages are semver enforced: breaking changes require a major version.
-
-Only Elm code can be published (no ports)
 
 #HSLIDE
 ### Overview
@@ -526,12 +427,12 @@ type alias Model =
 ## Creating guarantees
 
 ```elm
-type alias Question =
+type alias QuestionAndAnswer =
     { question : String
-    , response : Maybe String
+    , answer : Maybe String
     }
 
-type alias Model = List Question
+type alias Model = List QuestionAndAnswer
 ```
 Having more answers than questions is now impossible to represent
 
@@ -572,14 +473,6 @@ https://medium.com/@ckoster22/advanced-types-in-elm-opaque-types-ec5ec3b84ed2
 - "One thing I've learned from Rails: there are worse things than boilerplate." Richard Feldman
 
 #VSLIDE
-## Things that will be hard
-
-- Re-learning everything that we used side-effects for
-  - Updating a value in an array -> List.map
-  - Randomness, getting the time, ... -> Cmd
-  - ...
-
-#VSLIDE
 ## The language will evolve
 
 - Language features will be added or removed to make the language **simpler**
@@ -594,19 +487,39 @@ https://elm-lang.org/blog/how-to-use-elm-at-work
 #VSLIDE
 ## The checklist
 
-- Have an advocate: Vincent & Me
-- Start Small: Introduce Elm gradually
-- Fix a Problem: Resolve issues that hurt your team every day.
-- Write Elm Code: Write Elm, and compare it to the JavaScript code
-- Use Elm to fix a problem, not to just replace it
+- Have an advocate
+- Start Small: Introduce Elm gradually (No big refactor)
+- Fix a Problem
 
-- No big refactor
+#VSLIDE
+## Things that will be hard
+
+- Re-learning everything that we used side-effects for
+  - Updating a value in an array -> List.map
+  - Randomness, getting the time, ... -> Cmd
+  - ...
 
 #VSLIDE
 ## Additional resources
 
 - https://guide.elm-lang.org (Official learning guide)
 - https://elmlang.slack.com/ (#beginners)
-- https://ellie-app.com/ (Online REPL)
-- https://www.manning.com/books/elm-in-action
-- https://github.com/avh4/elm-format
+
+#HSLIDE
+## Workshop
+
+Take the previous message board application,
+and add a "flush" button that removes all messages.
+
+Start with https://ellie-app.com/3DYXXYSBFRga1
+Solution: https://ellie-app.com/3DYYWy3nrjBa1
+
+#VSLIDE
+
+Go further
+- Disable post button if field is empty
+- Add an input field to set a user name that will display next to each message
+
+#HSLIDE
+
+![](assets/img/elm-lol.png)
