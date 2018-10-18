@@ -445,27 +445,80 @@ Elm has its own package manager.
 
 Packages are semver enforced: breaking changes require a major version.
 
-#VSLIDE
-## :+1:
+Only Elm code can be published (no ports)
 
-- Having guarantees and no crashes is awesome
-- Refactorings are easy
-- Easy to read, because there is no magic
-- The language is small, so it's pretty fast to learn
+#HSLIDE
+### Overview
 
 #VSLIDE
-## :-1:
+### Elm is great for refactoring
 
-- Need to learn how to do some simple things again
-- There is no magic, but there is a lot of boilerplate (but there are worse things than boilerplate)
-- Young language
-- Small (but growing) community
+#VSLIDE
+
+What weird states can I have here?
+```elm
+type alias Model =
+    { questions : List String
+    , answers : List (Maybe String)
+    }
+```
+
+#VSLIDE
+
+What weird states can I have here?
+```elm
+type alias Model =
+    { questions : List String
+    , answers : List (Maybe String)
+    }
+
+{ questions: []
+, answers: [Just "Yes"]
+}
+```
+
+#VSLIDE
+## Creating guarantees
+
+```elm
+type alias Question =
+    { question : String
+    , response : Maybe String
+    }
+
+type alias Model = List Question
+```
+Having more answers than questions is now impossible to represent
+
+#VSLIDE
+## Creating guarantees (Additional resources)
+
+"Making Impossible States Impossible" by Richard Feldman
+https://www.youtube.com/watch?v=IcgmSRJHu_8
+
+"How Elm slays a UI antipattern" by Kris Jenkins
+http://blog.jenkster.com/2016/06/how-elm-slays-a-ui-antipattern.html
+
+#VSLIDE
+## No magic
+
+- The code is explicit, and there is no weird voodoo magic
+- Instead there is boilerplate
+
+- "One thing I've learned from Rails: there are worse things than boilerplate." Richard Feldman
+
+#VSLIDE
+## Things that will be hard
+
+- Re-learning everything that we used side-effects for
+  - Updating a value in an array -> List.map
+  - Randomness, getting the time, ... -> Cmd
 
 #VSLIDE
 ## Additional resources
 
-- https://guide.elm-lang.org
-- https://elmlang.slack.com/
-- https://ellie-app.com/
+- https://guide.elm-lang.org (Official learning guide)
+- https://elmlang.slack.com/ (#beginners)
+- https://ellie-app.com/ (Online REPL)
 - https://www.manning.com/books/elm-in-action
 - https://github.com/avh4/elm-format
