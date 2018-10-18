@@ -1,28 +1,77 @@
-#Elm
+Elm
 
 ![logo](assets/img/logo.png)
 
-#VSLIDE
-### What is it?
+#HSLIDE
+What I want
 
-- Made in 2012 by Evan Czaplicki
+#VSLIDE
+I want to build products
+
+#VSLIDE
+but I am scared of breaking things
+
+#VSLIDE
+
+```js
+validationPromise = () => {
+  return new Promise((resolve, reject) => {
+    return this.validate() ? resolve() : reject('invoice')
+  })
+}
+
+onErrorSubmit = error => {
+  // not very nice. could improve with error throwing
+  const expandInvoiceFields =
+    error == 'invoice' ? true : this.state.invoiceFields
+  // ...
+}
+```
+
+#VSLIDE
+Can I modify this piece of code without breaking anything?
+
+#VSLIDE
+
+- Flow / TypeScript
+- ESLint (I wrote 75 rules, and we enabled 328 rules at my previous company)
+- Test-Driven Development
+- React propTypes
+- Functional programming techniques
+
+They help, but they **only** help
+
+#VSLIDE
+I spent my time fixing bugs
+
+#VSLIDE
+Bug fixing **!=** building a product
+
+#VSLIDE
+I want guarantees that my changes will not break anything
+
+#VSLIDE
+If only I had a tool to give me these guarantees...
+
+#HSLIDE
+# Elm
+
+#VSLIDE
+
 - Easy to use functional programming language
 - Designed to develop webapps
-- Website: http://elm-lang.org/
+- **Produces no runtime exception**
 
 #VSLIDE
-### What is it?
 
 - Compiles to JavaScript
 - Can be used with and interact with JavaScript code
-- **Produces no runtime exception**
 
-#HSLIDE
+#VSLIDE
 ## Compiler
 
-- The aim of Elm's compiler is to compile your Elm code into a JS code that won't crash
-- The language is made so that this guarantee can be enforced
-- It tries to be as helpful and friendly as possible, and to help you fix the errors
+- Ensures that the resulting code won't crash
+- Helps you fix the errors
 
 #VSLIDE
 
@@ -66,6 +115,18 @@ import Main exposing (..)
 
 #HSLIDE
 ## Language Basics
+
+#VSLIDE
+### Immutability
+
+All variables in Elm are constants.
+- You can declare constants, but there is no reassignment
+- There are no operators or functions that mutate data
+
+```elm
+a = 1 -- OK: declaring a variable
+a = 2 -- NOT OK: reassigning a variable
+```
 
 #VSLIDE
 ### Basic types
@@ -223,12 +284,6 @@ type Maybe a -- Maybe is generic and can take any type as argument
 ### Pattern matching
 
 ```elm
-fib n =
-  case n of
-    0 -> 0
-    1 -> 1
-    _ -> fib (n - 1) + fib (n - 2)
-
 errorMessage: Maybe String -> String
 errorMessage error =
   case error of
@@ -248,18 +303,6 @@ where you can, control them where you can't.
 
 https://www.youtube.com/watch?v=tQRtTSIpye4
 http://blog.jenkster.com/2015/12/what-is-functional-programming.html
-
-#VSLIDE
-### Immutability
-
-All variables in Elm are constants.
-- You can declare constants, but there is no reassignment
-- There are no operators or functions that mutate data
-
-```elm
-a = 1 -- OK: declaring a variable
-a = 2 -- NOT OK: reassigning a variable
-```
 
 #VSLIDE
 ### No side-effects, only well-handled effects
@@ -306,36 +349,35 @@ main =
 The state of your application
 
 ```elm
-type alias Model = {
-  brands: List String,
-  error: Maybe String
-}
+type alias Model =
+  { userNames: List String,
+  , error: Maybe String
+  }
 
-model : Model
-model =
-  Model [] Nothing
+initialModel : Model
+initialModel =
+  { userNames: [], error: Nothing }
 ```
 
 #VSLIDE
 ### update
 
 A way to update your state
-
 ```elm
 type Msg
-    = FetchBrandSuccess (List String)
-    | FetchBrandFailure String
-    | EditBrand String
-    | SearchBrand String
+    = FetchUsersSuccess (List String)
+    | FetchUsersError String
+    | AddUser String
 
 update: Msg -> Model -> Model
 update msg model =
   case msg of
-    FetchBrandSuccess newBrands ->
-      { model | brands = newBrands, error = Nothing }
-    FetchBrandFailure error ->
+    FetchUsersSuccess users ->
+      { model | users = users, error = Nothing }
+    FetchUsersError error ->
       { model | error = Just error }
-    -- ...
+    AddUser user ->
+      { model | users = user :: model.users}
 ```
 
 #VSLIDE
@@ -352,6 +394,9 @@ view : Model -> Html Msg
 view model =
   div [] [ viewError model.error
          , viewBrands model.brands
+         , button
+            [onClick (AddUser "Jeroen")]
+            [text "Add user"]
          ]
 ```
 
@@ -491,13 +536,32 @@ type alias Model = List Question
 Having more answers than questions is now impossible to represent
 
 #VSLIDE
-## Creating guarantees (Additional resources)
+## Creating guarantees (resources)
 
 "Making Impossible States Impossible" by Richard Feldman
 https://www.youtube.com/watch?v=IcgmSRJHu_8
 
 "How Elm slays a UI antipattern" by Kris Jenkins
 http://blog.jenkster.com/2016/06/how-elm-slays-a-ui-antipattern.html
+
+#VSLIDE
+## Keep less in your head
+
+Somewhere in our code, we are sending a HTTP request, let's look for it
+```elm
+updateName : String -> User -> User
+updateBirthday : Date -> User -> User
+saveUser : User -> Cmd Msg
+```
+
+#VSLIDE
+## Keep less in your head
+
+"Scaling Elm apps" by Richard Feldman
+https://www.youtube.com/watch?v=DoA4Txr4GUs
+
+"Advanced Types in Elm (series)" by Charlie Koster
+https://medium.com/@ckoster22/advanced-types-in-elm-opaque-types-ec5ec3b84ed2
 
 #VSLIDE
 ## No magic
@@ -513,6 +577,30 @@ http://blog.jenkster.com/2016/06/how-elm-slays-a-ui-antipattern.html
 - Re-learning everything that we used side-effects for
   - Updating a value in an array -> List.map
   - Randomness, getting the time, ... -> Cmd
+  - ...
+
+#VSLIDE
+## The language will evolve
+
+- Language features will be added or removed to make the language **simpler**
+- Breaking changes
+- Elm 0.18 -> 0.19: 21 months
+
+#HSLIDE
+## How to go forward
+
+https://elm-lang.org/blog/how-to-use-elm-at-work
+
+#VSLIDE
+## The checklist
+
+- Have an advocate: Vincent & Me
+- Start Small: Introduce Elm gradually
+- Fix a Problem: Resolve issues that hurt your team every day.
+- Write Elm Code: Write Elm, and compare it to the JavaScript code
+- Use Elm to fix a problem, not to just replace it
+
+- No big refactor
 
 #VSLIDE
 ## Additional resources
