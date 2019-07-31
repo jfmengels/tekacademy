@@ -3,60 +3,7 @@ Elm
 ![logo](assets/img/logo.png)
 
 #HSLIDE
-What I want
-
-#VSLIDE
-I want to build products
-
-#VSLIDE
-but I don't like breaking things
-
-#VSLIDE
-
-```js
-validationPromise = () => {
-  return new Promise((resolve, reject) => {
-    return this.validate() ? resolve() : reject('invoice')
-  })
-}
-
-onErrorSubmit = error => {
-  // not very nice. could improve with error throwing
-  const expandInvoiceFields =
-    error == 'invoice' ? true : this.state.invoiceFields
-  // ...
-}
-```
-
-#VSLIDE
-Can I modify this piece of code without breaking anything?
-
-#VSLIDE
-
-- Flow / TypeScript
-- ESLint (I wrote 75 rules, and we enabled 328 rules at my previous company)
-- Test-Driven Development
-- React propTypes
-- Functional programming techniques
-
-They help, but they **only** help
-
-#VSLIDE
-I spent my time fixing bugs
-
-#VSLIDE
-Bug fixing **!=** building a product
-
-#VSLIDE
-I want guarantees that my changes will not break anything
-
-#VSLIDE
-If only I had a tool to give me these guarantees...
-
-#HSLIDE
 # Elm
-
-#VSLIDE
 
 - Easy to use functional programming language
 - Designed to develop webapps
@@ -66,52 +13,6 @@ If only I had a tool to give me these guarantees...
 
 - Compiles to JavaScript
 - Can be used with and interact with JavaScript code
-
-#VSLIDE
-## Compiler
-
-- Ensures that the resulting code won't crash
-- Helps you fix the errors
-
-#VSLIDE
-
-Type mismatch
-
-```elm
-addNumbers a b = a + b
-
-result = addNumbers 1 "2"
-```
-
-![](assets/img/elm-type-mismatch.png)
-https://ellie-app.com/3DtT78bwsqxa1
-
-#VSLIDE
-
-Variable not found
-
-```elm
-addNumbers a b = a + b
-
-result = addNumber 1 2
-```
-![](assets/img/elm-variable-not-found.png)
-
-https://ellie-app.com/3DtCx94GVkda1
-
-#VSLIDE
-
-Import cycle
-
-```elm
--- in Main.elm
-import Foo exposing (..)
-
--- in Foo.elm
-import Main exposing (..)
-```
-
-![](assets/img/elm-import-cycle.png)
 
 #HSLIDE
 ## Language Basics
@@ -200,23 +101,77 @@ divide a b =
 #VSLIDE
 ### Function usage
 
-Functions are curried and support partial application
+Use the name of the function, then add the arguments separated by spaces.
+No parens or commas.
 
 ```elm
 result = add 1 2
 -- 3
+```
 
--- add1: Function that will add 1 to parameter that it's given
+#VSLIDE
+### Currying
+
+Functions are curried and support partial application
+
+```elm
+-- add1 is a function that will add 1 to parameter that it's given
 add1 = add 1
 result = add1 2
 -- 3
 ```
 
 #HSLIDE
+## Compiler
+
+- Ensures that the resulting code won't crash
+- Helps you fix the errors with helpful messages
+
+#VSLIDE
+
+Type mismatch
+
+```elm
+addNumbers a b = a + b
+
+result = addNumbers 1 "2"
+```
+
+![](assets/img/elm-type-mismatch.png)
+https://ellie-app.com/3DtT78bwsqxa1
+
+#VSLIDE
+
+Variable not found
+
+```elm
+addNumbers a b = a + b
+
+result = addNumber 1 2
+```
+![](assets/img/elm-variable-not-found.png)
+
+https://ellie-app.com/3DtCx94GVkda1
+
+#VSLIDE
+
+Import cycle
+
+```elm
+-- in Main.elm
+import Foo exposing (..)
+
+-- in Foo.elm
+import Main exposing (..)
+```
+
+![](assets/img/elm-import-cycle.png)
+
+#HSLIDE
 
 Let's code an app: Message board
 
-https://ellie-app.com/3DYXXYSBFRga1
+https://ellie-app.com/6fjwgPWpqyja1
 
 #VSLIDE
 
@@ -253,51 +208,65 @@ viewMessage message =
 
 #VSLIDE
 
+```elm
+li [] [ text message]
+```
+```react
+<li /* No attributes */ >
+  {message}
+</li>
+```
+```HTML
+<li>
+  Oh hi there!
+</li>
+```
+
+
+#VSLIDE
+
 Add an input field
 
-https://ellie-app.com/3DYXsZHfG36a1
+https://ellie-app.com/6fjG6Jfdt3sa1
 
 #VSLIDE
 
 ```elm
 init = { messages = [ "Oh hi there!", "How you doing?" ], content = "" }
 
-type Msg = SetContent String
 update msg model =
-    case msg of
-        SetContent str ->
-            { model | content = str }
+    case msg.kind of
+        "UserUpdatedContent" -> { model | content = msg.str }
+        _ -> model
 
 view model =
-    div []
-        [ ul [] (List.map viewMessage model.messages)
-        , input [ type_ "text", onInput SetContent, value model.content ] []
-        ]
+    ...
+    , input [
+        type_ "text",
+        onInput (\str -> { kind = "UserUpdatedContent", str = str}),
+        value model.content
+      ] []
 ```
 
 #VSLIDE
 
 Post a message
 
-https://ellie-app.com/3DYXXYSBFRga1
+https://ellie-app.com/6fjNwVL85dwa1
 
 #VSLIDE
 
 ```elm
-type Msg = SetContent String | PostMessage
-
 update msg model =
-    case msg of
-        SetContent str -> { model | content = str }
-        PostMessage ->
-            { model | content = "", messages = List.append model.messages [ model.content ] }
+  case msg.kind of
+    "UserClickedOnPostButton" ->
+      { model | content = "", messages = List.append model.messages [ model.content ] }
 
 view model =
-    div []
-        [ ul [] (List.map viewMessage model.messages)
-        , input [ type_ "text", onInput SetContent, value model.content ] []
-        , button [ onClick PostMessage ] [ text "Post" ]
-        ]
+  ...
+  , button [
+    onClick { kind = "UserClickedOnPostButton", str = "" }
+  ] [ text "Post" ]
 ```
 
 #VSLIDE
@@ -343,7 +312,7 @@ updateName :
 ```
 
 #VSLIDE
-### Creating union types
+### Custom types
 
 ```elm
 type CardColor = Black | Red
@@ -372,18 +341,19 @@ http://blog.jenkster.com/2015/12/what-is-functional-programming.html
 ### No side-effects, only well-handled effects
 
 To apply effects, create a request for it, and return it to the runtime.
-They are passed to Elm's runtime which will execute it
 
 ```elm
+update : Msg -> Model -> ( Model, Cmd Msg ) =
 update msg model =
-    case msg of
-      RequestUrl -> (model, getRandomGif "cats")
-      NewGif body -> ({model | body = body}, Cmd.none)
+    case msg.kind of
+      "RequestUrl" -> (model, getRandomGif "cats")
+      "NewGif" -> ({model | body = msg.body}, Cmd.none)
 
-
-giphyUrl = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC"
 getRandomGif topic =
-    Http.send NewGif (Http.getString giphyUrl)
+  Http.get {
+    url = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC",
+    expect = (\body-> { kind = "NewGif", body = body })
+  }
 ```
 
 #VSLIDE
@@ -392,6 +362,78 @@ getRandomGif topic =
 System to communicate safely with JavaScript code by message passing.
 
 The JS code may crash, but the Elm code won't.
+
+#HSLIDE
+# Creating guarantees
+
+#VSLIDE
+## Problem modeling
+
+
+#VSLIDE
+## Modeling data fetching in JS
+
+```js
+const state = {
+  isLoading: true | false,
+  data: []
+}
+```
+
+#VSLIDE
+## Modeling data fetching in JS
+
+Handling errors
+
+```js
+const state = {
+  isLoading: true | false,
+  data: [...],
+  error: null | String
+}
+```
+
+#VSLIDE
+## Modeling data fetching in JS
+
+What happened here? And what should we do?
+
+```js
+const state = {
+  isLoading: true,
+  data: ["Some", "data"],
+  error: "HTTP 404"
+}
+```
+
+#VSLIDE
+## Modeling data fetching in Elm
+
+```js
+type State
+  = Loading
+  | Errored Http.Error
+  | Succeeded (List String)
+```
+
+#VSLIDE
+## Modeling data fetching in Elm
+
+Use custom types for the `Msg`
+https://ellie-app.com/3DYXXYSBFRga1
+
+```elm
+type Msg = SetContent String | PostMessage
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        SetContent str -> { model | content = str }
+        PostMessage -> ...
+
+view : Model -> Html Msg
+view : button [ onClick PostMessage ] [ text "Post" ]
+```
 
 #HSLIDE
 ### Overview
@@ -446,64 +488,12 @@ https://www.youtube.com/watch?v=IcgmSRJHu_8
 http://blog.jenkster.com/2016/06/how-elm-slays-a-ui-antipattern.html
 
 #VSLIDE
-## Keep less in your head
-
-Somewhere in our code, we are sending a HTTP request, let's look for it
-```elm
-updateName : String -> User -> User
-updateBirthday : Date -> User -> User
-saveUser : User -> Cmd Msg
-```
-
-#VSLIDE
-## Keep less in your head
-
-"Scaling Elm apps" by Richard Feldman
-https://www.youtube.com/watch?v=DoA4Txr4GUs
-
-"Advanced Types in Elm (series)" by Charlie Koster
-https://medium.com/@ckoster22/advanced-types-in-elm-opaque-types-ec5ec3b84ed2
-
-#VSLIDE
 ## No magic
 
 - The code is explicit, and there is no weird voodoo magic
 - Instead there is boilerplate
 
 - "One thing I've learned from Rails: there are worse things than boilerplate." Richard Feldman
-
-#VSLIDE
-## The language will evolve
-
-- Language features will be added or removed to make the language **simpler**
-- Breaking changes
-- Elm 0.18 -> 0.19: 21 months
-
-#HSLIDE
-## How to go forward
-
-https://elm-lang.org/blog/how-to-use-elm-at-work
-
-#VSLIDE
-## The checklist
-
-- Have an advocate
-- Start Small: Introduce Elm gradually (No big refactor)
-- Fix a Problem
-
-#VSLIDE
-## Things that will be hard
-
-- Re-learning everything that we used side-effects for
-  - Updating a value in an array -> List.map
-  - Randomness, getting the time, ... -> Cmd
-  - ...
-
-#VSLIDE
-## Additional resources
-
-- https://guide.elm-lang.org (Official learning guide)
-- https://elmlang.slack.com/ (#beginners)
 
 #HSLIDE
 ## Workshop
@@ -519,6 +509,149 @@ Solution: https://ellie-app.com/3DYYWy3nrjBa1
 Go further
 - Disable post button if field is empty
 - Add an input field to set a user name that will display next to each message
+
+#HSLIDE
+
+# Tips for being productive
+
+#VSLIDE
+
+Learn Elm!
+Go through the Elm official guide: http://guide.elm-lang.org
+
+#VSLIDE
+
+All variables can be found in a file or in the imports, except for those in
+the following list https://github.com/elm/core/blob/1.0.2/README.md#default-imports
+
+(They all come from [`elm/core`](https://package.elm-lang.org/packages/elm/core/latest))
+
+#VSLIDE
+
+You can use [`Debug.log`](https://package.elm-lang.org/packages/elm/core/latest/Debug#log) to print a message in your console.
+
+```elm
+Debug.log "helpful message" value
+```
+Warning: It will not log anything if you only pass it one argument!
+
+#VSLIDE
+
+If you're stuck, you can ask for help on the [Elm slack](http://elmlang.herokuapp.com/)
+on #beginners or #help
+
+They're very nice and helpful (and I answer sometimes too)
+(Please do this if I'm not here)
+#VSLIDE
+
+Configure your editor to show compiler errors
+
+#VSLIDE
+
+Read the compiler errors to the end!
+
+#VSLIDE
+
+When failing to compile, prioritize having the code recompile
+i.e. Don't make big changes all at once
+https://incrementalelm.com/articles/moving-faster-with-tiny-steps
+
+#VSLIDE
+
+Configure your editor to format on save using https://github.com/avh4/elm-format
+
+#VSLIDE
+
+The version of Elm we're using is `0.19.0`. `O.19.1` will be out in a shortish while.
+
+#VSLIDE
+
+You can find the list of dependencies in the `elm.json` file.
+
+#VSLIDE
+
+Install https://github.com/dmy/elm-package-info in your browser
+
+This will tell you the Elm version of a package on https://package.elm-lang.org/.
+Packages for old versions on Elm are still googlable
+(like those from elm-lang/* and evancz/)
+
+#VSLIDE
+
+Our Main file is `Main.elm`, and it all starts with the `main` function.
+From there on, no magic anymore (but some complex code).
+
+#VSLIDE
+
+- On the funnel, to develop, run `npm run watch -s` and `npm run watch-elm-analyse -s`
+- To run tests, run `npm test`
+
+#HSLIDE
+
+# Quick explanations
+(and avoiding easy pitfalls)
+
+#VSLIDE
+
+When working with JSON or decoders, read
+https://guide.elm-lang.org/effects/json.html
+(go down to the "JSON" section, or read it all)
+
+and ask questions on the Elm slack if you don't get it!
+
+#VSLIDE
+
+To understand the `|>`, `<|`, `>>` and `<<` operators that you see:
+- https://package.elm-lang.org/packages/elm/core/latest/Basics#(%3C|)
+- https://www.smoothterminal.com/articles/understanding-pipes-in-elm
+
+#VSLIDE
+
+What are subscriptions?
+
+They are the way to get events that don't depend on user input (subscribing to the current time). They will be transformed explicitly into `Msg` and sent to `update`.
+
+```elm
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Time.every 1000 Tick
+```
+
+#VSLIDE
+
+What does this mean?
+```elm
+type Foo = Foo Something
+```
+This is an opaque type, it wraps `Something`, and basically prevents other modules
+from using anything from the implementation. (They're awesome)
+
+https://medium.com/@ckoster22/advanced-types-in-elm-opaque-types-ec5ec3b84ed2
+
+#VSLIDE
+
+I ran into an error that looks like
+```
+This argument is a list of type:
+
+    List (Html Msg)
+
+But `div` needs the 2nd argument to be:
+
+    List (Html msg)
+```
+
+https://gitlab.legalstart.fr/yolaw/knowledgebase/merge_requests/68
+
+#VSLIDE
+
+```elm
+import Data.Funnel as Funnel exposing (Funnel)
+```
+- `import Data.Funnel`: That's the imported module
+- `as Funnel`: That's the alias we give to the module, so that we can write `Funnel.someFunction` instead of `Data.Funnel.someFunction`
+- `exposing (Funnel)`: We import the `Funnel` type, declared in the module.
+You can use [`Debug.log`](https://package.elm-lang.org/packages/elm/core/latest/Debug#log) to print a message in your console.
 
 #HSLIDE
 
